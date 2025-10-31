@@ -41,7 +41,7 @@ Webpack 多页面 & GitLab 增量构建部署模板
 
 ## 三、增量部署
 
-利用 GitLab 变量跑出有修改的 `pages` 文件夹，构建打包后使用阿里云 OSS 脚手架 [aliyunoss-cli](https://github.com/mazeyqian/aliyunoss-cli) 自动上传到云端。
+利用 GitLab 变量跑出有修改的 `pages` 文件夹，构建打包后使用阿里云 OSS 脚手架 [aliyunoss-cli](https://github.com/chengchuu/aliyunoss-cli) 自动上传到云端。
 
 ```
 search_dir=src/pages

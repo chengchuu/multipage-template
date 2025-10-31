@@ -15,7 +15,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/mazeyqian/multipage-template.git"
+    "url": "git+https://github.com/chengchuu/multipage-template.git"
   },
   "keywords": [
     "multip",
@@ -25,9 +25,9 @@
   "author": "Mazey",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/mazeyqian/multipage-template/issues"
+    "url": "https://github.com/chengchuu/multipage-template/issues"
   },
-  "homepage": "https://github.com/mazeyqian/multipage-template#readme",
+  "homepage": "https://github.com/chengchuu/multipage-template#readme",
   "devDependencies": {
     "@babel/core": "^7.11.4",
     "@babel/plugin-proposal-class-properties": "^7.10.4",
