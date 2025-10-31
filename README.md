@@ -76,4 +76,4 @@ The notification will be opened after filling the file: `build\shell\notificatio
 
 ## Appendix
 
-Address of this project: [https://github.com/chengchuu/multipage-template](https://github.com/chengchuu/multipage-template)
+Address of this project: <https://github.com/chengchuu/multipage-template>

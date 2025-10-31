@@ -1,7 +1,7 @@
 #!/bin/bash
 :<<EOF
 Multipage Template CICD Shell Script
-@Mazey
+@Cheng
 EOF
 
 set -e

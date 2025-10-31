@@ -2,7 +2,7 @@
   "name": "multipage-template",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "src/index.js",
   "scripts": {
     "dev": "cross-env NODE_ENV=development webpack-dev-server --config build/webpack.dev.config.js",
     "build": "cross-env NODE_ENV=production node build/build.js",
@@ -22,7 +22,7 @@
     "page",
     "webpack"
   ],
-  "author": "Mazey",
+  "author": "Cheng",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/chengchuu/multipage-template/issues"
