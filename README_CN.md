@@ -1,12 +1,12 @@
 # multipage-template
 
-Webpack 多页面 & GitLab 增量构建部署模板
+webpack 多页面 & GitLab 增量构建部署模板。
 
-## 一、入口文件
+## 入口文件
 
 每新建个独立的页面只需要在 `pages` 下面新建一个文件夹即可，但必须拥有两个入口文件 `index.html`、`index.js`。
 
-```
+```plain
 ├── package.json
 └── src
     ├── index.js // pages 外部可以放一些通用的东西
@@ -20,7 +20,7 @@ Webpack 多页面 & GitLab 增量构建部署模板
             └── index.html
 ```
 
-## 二、出口
+## 出口
 
 构建打包出来的页面结构互相独立。
 
@@ -39,11 +39,11 @@ Webpack 多页面 & GitLab 增量构建部署模板
             └── 88870cd4b2e554c2a754.js
 ```
 
-## 三、增量部署
+## 增量部署
 
 利用 GitLab 变量跑出有修改的 `pages` 文件夹，构建打包后使用阿里云 OSS 脚手架 [aliyunoss-cli](https://github.com/chengchuu/aliyunoss-cli) 自动上传到云端。
 
-```
+```bash
 search_dir=src/pages
 for path in "$search_dir"/*; do
 echo "$(git diff HEAD~ --name-only | grep "$path")"
