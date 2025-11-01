@@ -58,4 +58,4 @@ done
 
 ## 参考
 
-- [使用 GitLab CI/CD 和阿里云 CLI 自动部署前端项目](https://blog.mazey.net/1695.html)
+- [使用 GitLab CI/CD 和阿里云 CLI 自动部署前端项目](http://blog.mazey.net/1695.html)

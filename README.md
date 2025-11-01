@@ -72,7 +72,7 @@ The notification will be opened after filling the file: `build\shell\notificatio
 
 ## Reference
 
-[Use GitLab CI/CD and Aliyun CLI to deploy front-end projects](https://blog.mazey.net/1695.html)
+[Use GitLab CI/CD and Aliyun CLI to deploy front-end projects](http://blog.mazey.net/1695.html)
 
 ## Appendix
 
