@@ -45,7 +45,7 @@ Each packaged page is independent.
 
 ### Aliyun OSS
 
-Use GitLab variable to run out of modified `pages` folder, and use Aliyun OSS CLI [aliyunoss-cli](https://github.com/mazeyqian/aliyunoss-cli) to upload packaged files automatically.
+Use GitLab variable to run out of modified `pages` folder, and use Aliyun OSS CLI [aliyunoss-cli](https://github.com/chengchuu/aliyunoss-cli) to upload packaged files automatically.
 
 ```
 search_dir=src/pages
@@ -72,8 +72,8 @@ The notification will be opened after filling the file: `build\shell\notificatio
 
 ## Reference
 
-[Use GitLab CI/CD and Aliyun CLI to deploy front-end projects](https://blog.mazey.net/1695.html)
+[Use GitLab CI/CD and Aliyun CLI to deploy front-end projects](http://blog.mazey.net/1695.html)
 
 ## Appendix
 
-Address of this project: [https://github.com/mazeyqian/multipage-template](https://github.com/mazeyqian/multipage-template)
+Address of this project: <https://github.com/chengchuu/multipage-template>
