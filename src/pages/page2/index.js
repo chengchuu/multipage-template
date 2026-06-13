@@ -1,3 +1,3 @@
-import './font.scss';
+import "./font.scss";
 
-console.log('page2');
+console.log("page2");

@@ -1,1 +1,1 @@
-console.log('tiny');
+console.log("tiny");

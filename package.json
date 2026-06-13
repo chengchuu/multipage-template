@@ -11,7 +11,8 @@
     "release:prd": "aliyunoss-cli --releaseEnv prd",
     "publish:dev": "npm i && npm run build && npm run release:dev",
     "publish:pre": "npm i && npm run build && npm run release:pre",
-    "publish:prd": "npm i && npm run build && npm run release:prd"
+    "publish:prd": "npm i && npm run build && npm run release:prd",
+    "lint:fix": "eslint ./src/**/*.js --ext 'js' --fix"
   },
   "repository": {
     "type": "git",
