@@ -8,7 +8,7 @@ Webpack multi-page and GitLab incremental build deployment template.
 
 Each new standalone page only needs to create a folder under `pages`, but must have two entry files: `index.html` and `index.js`.
 
-```
+```text
 ├── package.json
 └── src
     ├── index.js // pages - You can put common things on the outside.
@@ -26,7 +26,7 @@ Each new standalone page only needs to create a folder under `pages`, but must h
 
 Each packaged page is independent.
 
-```
+```text
 ├── package.json
 └── dist
     ├── page1
@@ -47,7 +47,7 @@ Each packaged page is independent.
 
 Use GitLab variable to run out of modified `pages` folder, and use Aliyun OSS CLI [aliyunoss-cli](https://github.com/chengchuu/aliyunoss-cli) to upload packaged files automatically.
 
-```
+```text
 search_dir=src/pages
 for path in "$search_dir"/*; do
 echo "$(git diff HEAD~ --name-only | grep "$path")"

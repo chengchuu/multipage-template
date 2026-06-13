@@ -24,7 +24,7 @@ webpack 多页面 & GitLab 增量构建部署模板。
 
 构建打包出来的页面结构互相独立。
 
-```
+```text
 ├── package.json
 └── dist
     ├── page1
