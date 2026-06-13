@@ -1,16 +1,16 @@
-const webpack = require('webpack');
-const { merge } = require('webpack-merge');
-const baseConf = require('./webpack.base.config');
-const prodConfig = require('./conf').build;
-const OptimizeCSSPlugin = require('optimize-css-assets-webpack-plugin');
-const { assetsPath, version, onlyPages } = require('./utils');
+const webpack = require("webpack");
+const { merge } = require("webpack-merge");
+const baseConf = require("./webpack.base.config");
+const prodConfig = require("./conf").build;
+const OptimizeCSSPlugin = require("optimize-css-assets-webpack-plugin");
+const { assetsPath, version, onlyPages } = require("./utils");
 // const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
-const WorkboxPlugin = require('workbox-webpack-plugin');
+const WorkboxPlugin = require("workbox-webpack-plugin");
 
 const prdConf = merge(baseConf, {
-  mode: 'production',
+  mode: "production",
   output: {
-    publicPath: '../',
+    publicPath: "../",
     filename: assetsPath(`[name]/${version}/[chunkhash].js`)
   },
   devtool: prodConfig.devtoolType,
@@ -33,14 +33,14 @@ const prdConf = merge(baseConf, {
     new webpack.optimize.ModuleConcatenationPlugin()
   ].concat(
     onlyPages
-      .filter((page) => ['example-a'].includes(page))
+      .filter((page) => ["example-a"].includes(page))
       .map((page) => {
         const id = `${page}-v${version}`;
         // WIKI https://developers.google.com/web/tools/workbox/reference-docs/latest/module-workbox-webpack-plugin.GenerateSW#GenerateSW
         return new WorkboxPlugin.GenerateSW({
           cacheId: `${id}-gsw`,
           // Do not precache images
-          exclude: [/\.(?:png|jpg|jpeg|svg)$/, 'service-wroker.js'], // Page need refresh twice.
+          exclude: [/\.(?:png|jpg|jpeg|svg)$/, "service-wroker.js"], // Page need refresh twice.
           // target dir
           swDest: `../dist/${page}/service-worker.js`,
           skipWaiting: true,
@@ -54,7 +54,7 @@ const prdConf = merge(baseConf, {
               // Match any request that ends with .png, .jpg, .jpeg or .svg.
               urlPattern: /^https:\/\/xxx.xxx.com\/xxx/, // /\.(?:png|jpg|jpeg|svg)$/,
               // Apply a cache-first strategy.
-              handler: 'CacheFirst',
+              handler: "CacheFirst",
               options: {
                 // Use a custom cache name.
                 cacheName: `${id}-icon-images`,
@@ -73,7 +73,7 @@ const prdConf = merge(baseConf, {
               // Match any request that ends with .png, .jpg, .jpeg or .svg.
               urlPattern: /^https:\/\/xxx.xxx.com/, // /\.(?:png|jpg|jpeg|svg)$/,
               // Apply a cache-first strategy.
-              handler: 'CacheFirst',
+              handler: "CacheFirst",
               options: {
                 // Use a custom cache name.
                 cacheName: `${id}-note-images`,
@@ -93,7 +93,7 @@ const prdConf = merge(baseConf, {
               // Match any request that ends with .png, .jpg, .jpeg or .svg.
               urlPattern: /^https:\/\/xxx.xxx.net/, // /\.(?:png|jpg|jpeg|svg)$/,
               // Apply a cache-first strategy.
-              handler: 'CacheFirst',
+              handler: "CacheFirst",
               options: {
                 // Use a custom cache name.
                 cacheName: `${id}-i-images`,

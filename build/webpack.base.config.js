@@ -1,5 +1,5 @@
-const { entryList, _resolve, pageList, version } = require('./utils');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const { entryList, _resolve, pageList, version } = require("./utils");
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 // const webpack = require('webpack');
 // const path = require('path');
 
@@ -7,13 +7,13 @@ console.log(`NODE_ENV: ${process.env.NODE_ENV}`);
 
 const baseConf = {
   entry: entryList(),
-  output: _resolve('../dist'),
+  output: _resolve("../dist"),
   module: {
     rules: [
       {
         test: /\.js$/,
-        use: 'babel-loader',
-        include: _resolve('../src')
+        use: "babel-loader",
+        include: _resolve("../src")
       },
       {
         test: /\.(sa|sc|c)ss$/,
@@ -24,8 +24,8 @@ const baseConf = {
             //   hmr: process.env.NODE_ENV === 'development'
             // }
           },
-          'css-loader',
-          'sass-loader'
+          "css-loader",
+          "sass-loader"
         ]
       }
     ]
@@ -49,9 +49,9 @@ const baseConf = {
     })
   ],
   resolve: {
-    extensions: ['.js', '.json'],
+    extensions: [".js", ".json"],
     alias: {
-      '@': _resolve('../src')
+      "@": _resolve("../src")
     }
   }
 };

@@ -1,15 +1,15 @@
-const path = require('path');
-const fs = require('fs');
-const prodConfig = require('./conf').build;
-let entryFiles = fs.readdirSync(path.resolve(__dirname, '../src/pages'));
-const HtmlWebpackPlugin = require('html-webpack-plugin');
+const path = require("path");
+const fs = require("fs");
+const prodConfig = require("./conf").build;
+let entryFiles = fs.readdirSync(path.resolve(__dirname, "../src/pages"));
+const HtmlWebpackPlugin = require("html-webpack-plugin");
 const _resolve = (_path) => path.resolve(__dirname, _path);
 const assetsPath = (_path) => path.posix.join(prodConfig.assetsPath, _path);
-const format = require('date-fns/format');
+const format = require("date-fns/format");
 // 生成版本 20210308.072903
 const genVersion = () => {
   const d = new Date();
-  const version = format(d, 'yyyyMMdd.HHmmss');
+  const version = format(d, "yyyyMMdd.HHmmss");
   return version;
 };
 const version = genVersion();
@@ -19,7 +19,7 @@ if (process.env.PAGE) {
 }
 
 // 忽略的文件夹
-const fPages = ['.DS_Store'];
+const fPages = [".DS_Store"];
 // 限制文件夹
 const onlyPages = [];
 
@@ -30,7 +30,7 @@ entryFiles = entryFiles.filter((page) => {
   return !fPages.includes(page);
 });
 
-console.log('更新的页面：', entryFiles);
+console.log("更新的页面：", entryFiles);
 
 module.exports = {
   _resolve,
@@ -59,11 +59,11 @@ module.exports = {
     entryFiles.map((page) => {
       pageList.push(
         new HtmlWebpackPlugin({
-          template: ['example-a'].includes(page)
-            ? _resolve('../src/template/example1/index.html')
+          template: ["example-a"].includes(page)
+            ? _resolve("../src/template/example1/index.html")
             : _resolve(`../src/pages/${page}/index.html`),
           filename: _resolve(`../dist/${page}/index.html`),
-          chunks: ['common', page],
+          chunks: ["common", page],
           // 压缩配置
           minify: {
             // 删除Html注释
@@ -73,11 +73,11 @@ module.exports = {
             // 去除属性引号
             removeAttributeQuotes: true
           },
-          chunksSortMode: 'auto',
-          CSS_BASE_URL: process.env.NODE_ENV === 'production' ? '//i.mazey.net/style' : 'http://localhost:5514',
+          chunksSortMode: "auto",
+          CSS_BASE_URL: process.env.NODE_ENV === "production" ? "//i.mazey.net/style" : "http://localhost:5514",
           // serve: http://localhost:9202 local: http://localhost:5513/lib
           JavaScript_BASE_URL:
-            process.env.NODE_ENV === 'production' ? '//i.mazey.net/polestar' : 'http://localhost:9202'
+            process.env.NODE_ENV === "production" ? "//i.mazey.net/polestar" : "http://localhost:9202"
         })
       );
     });

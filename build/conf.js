@@ -1,11 +1,11 @@
 module.exports = {
   dev: {
-    host: 'localhost',
+    host: "localhost",
     port: 9999,
-    devtool: 'eval-cheap-module-source-map'
+    devtool: "eval-cheap-module-source-map"
   },
   build: {
     devtool: false,
-    assetsPath: './'
+    assetsPath: "./"
   }
 };
