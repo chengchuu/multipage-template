@@ -7,7 +7,7 @@ console.log(`NODE_ENV: ${process.env.NODE_ENV}`);
 
 const baseConf = {
   entry: entryList(),
-  output: _resolve("../dist"),
+  output: { path: _resolve("../dist") },
   module: {
     rules: [
       {

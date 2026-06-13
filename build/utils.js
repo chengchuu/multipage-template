@@ -74,10 +74,10 @@ module.exports = {
             removeAttributeQuotes: true
           },
           chunksSortMode: "auto",
-          CSS_BASE_URL: process.env.NODE_ENV === "production" ? "//i.mazey.net/style" : "http://localhost:5514",
+          CSS_BASE_URL: process.env.NODE_ENV === "production" ? "//i.mazey.net/style/lib" : "http://localhost:5513/lib",
           // serve: http://localhost:9202 local: http://localhost:5513/lib
           JavaScript_BASE_URL:
-            process.env.NODE_ENV === "production" ? "//i.mazey.net/polestar" : "http://localhost:9202"
+            process.env.NODE_ENV === "production" ? "//i.mazey.net/polestar/lib" : "http://localhost:9202"
         })
       );
     });
