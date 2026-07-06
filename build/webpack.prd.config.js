@@ -4,7 +4,6 @@ const baseConf = require("./webpack.base.config");
 const prodConfig = require("./conf").build;
 const OptimizeCSSPlugin = require("optimize-css-assets-webpack-plugin");
 const { assetsPath, version, onlyPages } = require("./utils");
-// const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 const WorkboxPlugin = require("workbox-webpack-plugin");
 
 const prdConf = merge(baseConf, {
@@ -18,16 +17,6 @@ const prdConf = merge(baseConf, {
     rules: []
   },
   plugins: [
-    // new UglifyJsPlugin({
-    //   cache: true,
-    //   parallel: true,
-    //   uglifyOptions: {
-    //     compress: false,
-    //     ecma: 6,
-    //     mangle: true
-    //   },
-    //   sourceMap: true
-    // }),
     new OptimizeCSSPlugin(),
     // new webpack.HashedModuleIdsPlugin(),
     new webpack.optimize.ModuleConcatenationPlugin()

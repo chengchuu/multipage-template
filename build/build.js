@@ -1,8 +1,6 @@
 "use strict";
 // node for loading
 const ora = require("ora");
-// rm-rf for node
-// const rm = require('rimraf');
 // console for node
 const chalk = require("chalk");
 // path for node
@@ -64,6 +62,3 @@ fs.remove(rmFile)
   .catch((err) => {
     console.error(err);
   });
-// rm(rmFile, function (err) {
-//   if (err) throw err;
-// });
