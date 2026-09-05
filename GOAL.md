@@ -33,6 +33,7 @@ The project should provide:
 - Per-page configuration overrides and extensions.
 - Environment-specific external CSS and JavaScript resources.
 - ESLint-based JavaScript code-quality and formatting checks.
+- A deliberate pnpm and npm package-manager workflow.
 - Predictable production output under `dist/`.
 - A simple structure that remains maintainable as the number of pages grows.
 
@@ -593,6 +594,202 @@ Linting should not cause unrelated files to be reformatted merely because anothe
 
 ---
 
+## Node.js Package-Manager Workflow
+
+The project should use a deliberate boundary between pnpm and npm.
+
+pnpm owns local dependency operations.
+
+npm owns local development commands, lifecycle commands, package inspection, and GitHub Actions execution.
+
+The selected command should depend on the operation being performed rather than using one package manager for every task.
+
+### Local Dependency Management
+
+Use pnpm for dependency operations performed on a developer machine.
+
+Install declared dependencies with:
+
+```bash
+pnpm install
+```
+
+Add a dependency with:
+
+```bash
+pnpm add <package>
+```
+
+Add a development dependency with:
+
+```bash
+pnpm add -D <package>
+```
+
+Update dependencies with:
+
+```bash
+pnpm update
+```
+
+Or update a specific dependency:
+
+```bash
+pnpm update <package>
+```
+
+Remove a dependency with:
+
+```bash
+pnpm remove <package>
+```
+
+Do not use local npm commands to install, add, update, or remove project dependencies.
+
+Examples that should not be used for local dependency management include:
+
+```text
+npm install <package>
+npm uninstall <package>
+npm update <package>
+```
+
+Developers are expected to provision pnpm independently.
+
+The repository should not add package-manager bootstrap infrastructure merely to enforce this workflow.
+
+Do not add:
+
+- Corepack setup.
+- Repository-owned pnpm installers.
+- Package-manager bootstrap scripts.
+- Installation wrappers whose only purpose is provisioning pnpm.
+
+### Local Project Commands
+
+Use npm to run maintained `package.json` scripts.
+
+Examples include:
+
+```bash
+npm run dev
+npm run build
+npm run lint
+npm run lint:fix
+npm run test
+```
+
+Additional scripts should follow the same convention.
+
+Use:
+
+```bash
+npm run <script>
+```
+
+rather than:
+
+```text
+pnpm run <script>
+pnpm <script>
+pnpm exec <command>
+```
+
+Package scripts should remain independent from whichever tool installed the dependencies.
+
+When package contents need to be inspected, use:
+
+```bash
+npm pack
+```
+
+Do not use pnpm as the normal local lifecycle-command runner.
+
+### GitHub Actions
+
+If GitHub Actions workflows are introduced, they should use npm for installation and script execution.
+
+Install dependencies with:
+
+```bash
+npm install
+```
+
+Run maintained scripts with:
+
+```bash
+npm run <script>
+```
+
+Do not use:
+
+```text
+npm ci
+```
+
+Do not enable npm dependency caching in GitHub Actions.
+
+Workflow caching, if ever required for another purpose, should be treated as a separate explicit design decision rather than being coupled to dependency installation.
+
+### Package Metadata
+
+Do not add a `packageManager` field to `package.json` merely to enforce the pnpm and npm workflow.
+
+For example, the project should not introduce:
+
+```json
+{
+  "packageManager": "pnpm@..."
+}
+```
+
+unless a future explicit requirement changes this policy.
+
+If a `packageManager` field is introduced for another reason later, do not remove or modify it as incidental cleanup.
+
+### Lockfile Policy
+
+Package-manager responsibilities and lockfile policy are separate decisions.
+
+The project must not infer its lockfile policy from:
+
+```text
+pnpm install
+npm install
+local development
+GitHub Actions
+```
+
+Because `pages` is a greenfield project, the tracked lockfile policy should be selected explicitly.
+
+Until that decision is made:
+
+- Do not assume which lockfile should be committed.
+- Do not generate a lockfile solely to establish package-manager ownership.
+- Do not remove one lockfile solely because another package manager is used in a different context.
+- Do not rewrite lockfiles as incidental cleanup.
+
+Once a lockfile policy is selected, preserve it unless an explicit project decision changes it.
+
+### Workflow Boundary
+
+The intended command map is:
+
+| Context | Purpose | Command |
+|:--|:--|:--|
+| Local | Install dependencies | `pnpm install` |
+| Local | Add a dependency | `pnpm add <package>` |
+| Local | Update dependencies | `pnpm update [package]` |
+| Local | Remove a dependency | `pnpm remove <package>` |
+| Local | Run a project script | `npm run <script>` |
+| Local | Inspect packed contents | `npm pack` |
+| GitHub Actions | Install dependencies | `npm install` |
+| GitHub Actions | Run a project script | `npm run <script>` |
+
+Project documentation, scripts, and future automation should preserve this boundary consistently.
+
+---
+
 ## Build-System Separation
 
 Browser runtime code and build-system code should remain clearly separated.
@@ -680,6 +877,7 @@ The project should prioritize:
 - Predictable build behavior.
 - Maintainable Webpack configuration.
 - Consistent ESLint-enforced JavaScript formatting.
+- Deliberate pnpm and npm responsibilities.
 - Easy page creation and removal.
 - Reusable shared frontend logic.
 - Community-standard frontend practices.
@@ -695,6 +893,13 @@ Avoid:
 - Build-specific markup in every HTML source file when Webpack can handle injection.
 - Large monolithic Webpack configuration files.
 - Conflicting lint and formatting tools.
+- Using npm for local dependency operations.
+- Using pnpm for normal project-script execution.
+- `npm ci` in GitHub Actions.
+- npm dependency caching in GitHub Actions.
+- Package-manager bootstrap infrastructure without an explicit requirement.
+- A `packageManager` field added merely to enforce tooling choice.
+- Incidental lockfile changes.
 - Premature abstractions.
 - Overly complex configuration schemas.
 - Manual edits to generated output.
@@ -735,6 +940,8 @@ pages/
 ├── GOAL.md
 └── README.md
 ```
+
+A lockfile is intentionally omitted from this initial structure until the project explicitly selects its lockfile policy.
 
 This structure is an initial direction rather than a permanent requirement.
 
@@ -784,15 +991,35 @@ A page should be able to:
 - Reuse logic from `src/shared/`.
 - Build independently from unrelated pages.
 
-The project should provide:
+Local dependency installation should use:
+
+```bash
+pnpm install
+```
+
+Local project validation should use maintained npm scripts such as:
 
 ```bash
 npm run lint
+npm run build
 ```
 
 The lint command should check the project's JavaScript source and build-system code against the established ESLint rules.
 
 The initial implementation should successfully validate representative JavaScript through ESLint without requiring formatting exceptions for ordinary project code.
+
+If GitHub Actions is introduced, it should install dependencies and run project scripts using:
+
+```bash
+npm install
+npm run <script>
+```
+
+It should not use `npm ci` or npm dependency caching.
+
+The project should not add Corepack setup, a repository-owned package-manager installer, or a `packageManager` field merely to enforce the workflow.
+
+The project's lockfile policy should be explicitly selected rather than inferred from package-manager usage.
 
 A production build should generate the complete deployable result under:
 
