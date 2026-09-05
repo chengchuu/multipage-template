@@ -1,3 +1,3 @@
-import './font.css';
+import "./font.css";
 
-console.log('page1');
+console.log("page1");

@@ -1,2 +1,2 @@
-# Node Version
-nvm use 14.21.3
+# Node.js Version
+nvm use 22.22.2

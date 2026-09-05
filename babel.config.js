@@ -1,20 +1,20 @@
 module.exports = {
   presets: [
     [
-      '@babel/preset-env',
+      "@babel/preset-env",
       {
         targets: {
-          browsers: ['Android >= 4.0', 'IOS >= 8.0']
+          browsers: ["Android >= 4.0", "IOS >= 8.0"]
         },
-        useBuiltIns: 'usage',
+        useBuiltIns: "usage",
         corejs: 3
       }
     ]
   ],
   plugins: [
-    ['@babel/plugin-proposal-class-properties', { loose: true }],
+    ["@babel/plugin-proposal-class-properties", { loose: true }],
     [
-      '@babel/plugin-transform-runtime',
+      "@babel/plugin-transform-runtime",
       {
         absoluteRuntime: false,
         corejs: false,
@@ -24,5 +24,5 @@ module.exports = {
       }
     ]
   ],
-  sourceType: 'unambiguous'
+  sourceType: "unambiguous"
 };
