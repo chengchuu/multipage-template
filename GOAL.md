@@ -32,6 +32,7 @@ The project should provide:
 - Shared project-level configuration.
 - Per-page configuration overrides and extensions.
 - Environment-specific external CSS and JavaScript resources.
+- ESLint-based JavaScript code-quality and formatting checks.
 - Predictable production output under `dist/`.
 - A simple structure that remains maintainable as the number of pages grows.
 
@@ -480,6 +481,118 @@ The configuration model should avoid duplication and excessive nesting.
 
 ---
 
+## ESLint
+
+The project should use ESLint to provide consistent JavaScript formatting and basic static analysis.
+
+ESLint should cover relevant JavaScript source and build-system files, including:
+
+```text
+src/**/*.js
+config/**/*.js
+scripts/**/*.js
+webpack/**/*.js
+webpack.config.js
+```
+
+The exact file patterns may be adjusted to match the implemented repository structure.
+
+The project should provide a standard lint command:
+
+```bash
+npm run lint
+```
+
+A lint-fix command may also be provided when useful:
+
+```bash
+npm run lint:fix
+```
+
+### Established Formatting Rules
+
+The initial ESLint configuration should establish these formatting rules:
+
+```json
+{
+  "rules": {
+    "semi": ["warn", "always"],
+    "quotes": ["warn", "double"],
+    "indent": ["warn", 2, { "SwitchCase": 1 }],
+    "comma-dangle": ["warn", "always-multiline"],
+    "eol-last": ["warn", "always"],
+    "spaced-comment": ["warn", "always"],
+    "object-curly-spacing": ["warn", "always"],
+    "array-bracket-spacing": ["warn", "always"],
+    "object-curly-newline": [
+      "warn",
+      {
+        "ImportDeclaration": {
+          "multiline": true,
+          "minProperties": 4
+        }
+      }
+    ]
+  }
+}
+```
+
+The baseline style therefore requires:
+
+- Semicolons.
+- Double quotes.
+- 2-space indentation.
+- One additional indentation level for `case` clauses.
+- Trailing commas in multiline structures.
+- A newline at the end of every file.
+- A space after `//` in line comments.
+- Spaces inside object braces.
+- Spaces inside array brackets.
+- Multiline imports when an import contains at least four members.
+
+Example:
+
+```js
+import {
+  first,
+  second,
+  third,
+  fourth,
+} from "example-package";
+
+const options = {
+  enabled: true,
+  values: [ "first", "second" ],
+};
+```
+
+All initial formatting rules should use the `warn` severity.
+
+A rule may later be promoted to `error` after the existing project source conforms to it and stricter enforcement provides a clear benefit.
+
+### Formatting Principles
+
+The ESLint configuration should remain independent from a specific frontend framework.
+
+Environment, source type, globals, and additional static-analysis rules should be configured separately according to actual project requirements.
+
+When another formatter is introduced, its settings must remain compatible with ESLint for:
+
+- Quotes.
+- Semicolons.
+- Indentation.
+- Spacing.
+- Trailing commas.
+- Line wrapping where overlapping rules apply.
+
+The project should avoid multiple tools producing conflicting formatting results.
+
+Existing repository formatting conventions should be preserved unless they conflict with the configured ESLint rules.
+
+Linting should not cause unrelated files to be reformatted merely because another valid style is preferred.
+
+---
+
 ## Build-System Separation
 
 Browser runtime code and build-system code should remain clearly separated.
@@ -566,6 +679,7 @@ The project should prioritize:
 - Clear separation between source and build logic.
 - Predictable build behavior.
 - Maintainable Webpack configuration.
+- Consistent ESLint-enforced JavaScript formatting.
 - Easy page creation and removal.
 - Reusable shared frontend logic.
 - Community-standard frontend practices.
@@ -580,6 +694,7 @@ Avoid:
 - Duplicated `common/` and `utils/` directory concepts.
 - Build-specific markup in every HTML source file when Webpack can handle injection.
 - Large monolithic Webpack configuration files.
+- Conflicting lint and formatting tools.
 - Premature abstractions.
 - Overly complex configuration schemas.
 - Manual edits to generated output.
@@ -614,6 +729,7 @@ pages/
 │   └── ExternalAssetsPlugin.js
 │
 ├── dist/
+├── eslint.config.js
 ├── webpack.config.js
 ├── package.json
 ├── GOAL.md
@@ -667,6 +783,16 @@ A page should be able to:
 - Use different external resources in development and production.
 - Reuse logic from `src/shared/`.
 - Build independently from unrelated pages.
+
+The project should provide:
+
+```bash
+npm run lint
+```
+
+The lint command should check the project's JavaScript source and build-system code against the established ESLint rules.
+
+The initial implementation should successfully validate representative JavaScript through ESLint without requiring formatting exceptions for ordinary project code.
 
 A production build should generate the complete deployable result under:
 
