@@ -24,16 +24,17 @@ async function fixture(t, shared = {}) {
   return root;
 }
 
-function build(root, mode) {
+function build(root, mode, pageName, serving = false) {
   return new Promise((resolve, reject) => {
-    const compiler = webpack(createConfig(root, mode));
+    const configs = createConfig(root, mode, serving);
+    const compiler = webpack(pageName ? configs.filter((config) => config.name === pageName) : configs);
     compiler.run((error, stats) => {
       compiler.close((closeError) => {
         if (error || closeError) return reject(error || closeError);
         if (stats.hasErrors()) return reject(new Error(stats.toString({ all: false, errors: true })));
         resolve({
-          ...stats.toJson({ all: false, assets: true }),
-          fileDependencies: [ ...stats.compilation.fileDependencies ],
+          assets: stats.stats.flatMap((page) => page.toJson({ all: false, assets: true }).assets.map((asset) => ({ ...asset, name: `${page.compilation.name}/${asset.name}` }))),
+          fileDependencies: stats.stats.flatMap((page) => [ ...page.compilation.fileDependencies ]),
         });
       });
     });
@@ -41,6 +42,28 @@ function build(root, mode) {
 }
 
 for (const mode of [ "development", "production" ]) {
+  test(`${mode}: shared lazy modules and emitted assets stay inside each page`, async (t) => {
+    const root = await fixture(t);
+    await write(root, "src/shared/lazy.js", "export default 'lazy value';");
+    for (const name of [ "first", "second" ]) {
+      await write(root, `src/pages/${name}/index.html`, document);
+      await write(root, `src/pages/${name}/icon.svg`, "<svg xmlns=\"http://www.w3.org/2000/svg\"/>");
+      await write(root, `src/pages/${name}/index.js`, "globalThis.icon = new URL('./icon.svg', import.meta.url); import('../../shared/lazy.js').then(module => { globalThis.lazy = module.default; });");
+    }
+    const stats = await build(root, mode);
+    for (const name of [ "first", "second" ]) {
+      const localAssets = stats.assets.filter((asset) => asset.name.startsWith(`${name}/`));
+      assert.ok(localAssets.some((asset) => asset.name.startsWith(`${name}/chunks/`) && asset.name.endsWith(".js")));
+      assert.ok(localAssets.some((asset) => asset.name.startsWith(`${name}/assets/`) && asset.name.endsWith(".svg")));
+      const html = await fs.readFile(path.join(root, "dist", name, "index.html"), "utf8");
+      assert.doesNotMatch(html, /(?:src|href)="\.\.\//);
+    }
+    assert.deepEqual((await fs.readdir(path.join(root, "dist"))).sort(), [ "first", "second" ]);
+    const secondHtml = await fs.readFile(path.join(root, "dist/second/index.html"), "utf8");
+    await build(root, mode, "first");
+    assert.equal(await fs.readFile(path.join(root, "dist/second/index.html"), "utf8"), secondHtml);
+  });
+
   test(`${mode}: literal template syntax in source HTML stays unchanged`, async (t) => {
     const root = await fixture(t);
     const literal = "<script type=\"text/plain\"><%= clientTemplate %> ${value}</script>";
@@ -78,10 +101,10 @@ for (const mode of [ "development", "production" ]) {
       assert.doesNotMatch(html, /async="false"/);
       assert.ok(html.indexOf(`${mode}.css`) < html.indexOf("</head>"));
       assert.ok(html.includes(`src="https://example.test/${mode}.js" defer`));
-      const bundles = [ ...html.matchAll(/src="(\.\.\/assets\/[^"]+\.js)"/g) ];
+      const bundles = [ ...html.matchAll(/src="(index(?:\.[a-f0-9]+)?\.js)"/g) ];
       assert.equal(bundles.length, [ "js", "full" ].includes(name) ? 1 : 0);
       for (const [ , url ] of bundles) {
-        assert.ok(url.startsWith(`../assets/${name}`));
+        assert.match(url, mode === "production" ? /^index\.[a-f0-9]{8}\.js$/ : /^index\.js$/);
         const bundle = await fs.readFile(path.resolve(root, "dist", name, url), "utf8");
         const context = {};
         vm.runInNewContext(bundle, context);
@@ -142,7 +165,40 @@ test("missing optional files are normal; zero pages fail clearly", async (t) => 
   await fs.mkdir(path.join(root, "src/pages"), { recursive: true });
   assert.throws(() => createConfig(root), /No pages/);
   await write(root, "src/pages/only/index.html", document);
-  assert.equal(createConfig(root).mode, "production");
+  assert.equal(createConfig(root)[0].mode, "production");
   await fs.mkdir(path.join(root, "src/pages/only/index.js"));
   assert.throws(() => createConfig(root), /index.js must be a file/);
+});
+
+test("served page bundle URLs encode special characters in page names", async (t) => {
+  const root = await fixture(t);
+  const name = "100% done";
+  await write(root, `src/pages/${name}/index.html`, document);
+  await write(root, `src/pages/${name}/index.js`, "globalThis.fixture = true;");
+  await build(root, "development", undefined, true);
+  const html = await fs.readFile(path.join(root, "dist", name, "index.html"), "utf8");
+  const urls = [ ...html.matchAll(/src="([^"]+)"/g) ].map((match) => match[1]);
+  assert.deepEqual(urls, [ "/100%25%20done/dev-client.js", "/100%25%20done/index.js" ]);
+  for (const url of urls) {
+    await fs.access(path.join(root, "dist", decodeURIComponent(url)));
+  }
+});
+
+test("startup URLs use discovered pages and the listening address", async (t) => {
+  const root = await fixture(t);
+  for (const name of [ "z page", "example" ]) await write(root, `src/pages/${name}/index.html`, document);
+  const configs = createConfig(root, "development", true);
+  assert.equal(configs.filter((config) => config.devServer).length, 1);
+  for (const [ address, type, origin ] of [
+    [ { address: "127.0.0.1", port: 9123 }, "http", "http://127.0.0.1:9123" ],
+    [ { address: "::1", port: 9443 }, "https", "https://[::1]:9443" ],
+  ]) {
+    const messages = [];
+    configs[0].devServer.onListening({
+      server: { address: () => address },
+      options: { server: { type } },
+      logger: { info: (message) => messages.push(message) },
+    });
+    assert.deepEqual(messages, [ "Available pages:", `${origin}/example/`, `${origin}/z%20page/` ]);
+  }
 });

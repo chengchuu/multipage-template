@@ -28,9 +28,11 @@ Use pnpm for dependency installation, additions, updates, and removals. Track `p
 
 Create `src/pages/<name>/index.html` containing a normal HTML document. The next build generates `dist/<name>/index.html`. An optional `index.js` enables a page bundle. Browser scripts use ES modules and can import reusable code from `src/shared/`.
 
-HTML-only pages receive no page bundle. Production bundles use content hashes under `dist/assets/`; HTML uses relative bundle URLs to support deployment under a subdirectory. Builds clean `dist/`, including output belonging to removed pages. Never edit generated files.
+HTML-only pages receive no page bundle. Each page is compiled independently into `dist/<name>/`: production entries use `index.[hash].js`, and development entries use `index.js`. Lazy-loaded chunks and emitted asset modules stay under that page's `chunks/` and `assets/` directories. Shared source dependencies are bundled independently for each page. HTML uses relative bundle URLs, so a page directory can be served on its own. Configured external resources remain external, and source-authored links to sibling pages still require those pages.
 
-The development server reloads existing pages after HTML or JavaScript edits. HTML-only pages use one shared development-server reload client; neither disk build emits that client or a page bundle for them. Restart the server after adding or removing page directories, adding or removing optional entries, or editing build/page configuration. Page discovery and configuration loading occur when Webpack starts.
+Each compiler cleans only its own page directory; coordinated cleanup removes output belonging to deleted pages and the former root asset directory. Never edit generated files.
+
+The development server reloads existing pages after HTML or JavaScript edits. Each page includes a local development-server reload client; neither disk build emits that client or a page bundle for HTML-only pages. Restart the server after adding or removing page directories, adding or removing optional entries, or editing build/page configuration. Page discovery and configuration loading occur when Webpack starts.
 
 ## External assets
 

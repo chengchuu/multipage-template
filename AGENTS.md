@@ -22,7 +22,7 @@ Run `npm run lint`, `npm run test`, `npm run build:dev`, and `npm run build` for
 
 `scripts/discover-pages.js` discovers immediate page directories; `config/resolve-external-assets.js` validates and merges configuration; `config/ExternalAssetsPlugin.js` injects escaped asset tags through HtmlWebpackPlugin hooks. `webpack.config.js` composes these helpers. `test/build.test.js` builds isolated temporary fixtures using Node's test runner. See README.md for attribute support and script ordering.
 
-Build configuration and page configuration use CommonJS; browser code uses ES modules. Both build modes recreate `dist/`. Production bundles are content-hashed and referenced relatively. HTML-only pages receive no page bundle. Shared external defaults are empty until explicitly configured. No CI or deployment workflow is included.
+Build configuration and page configuration use CommonJS; browser code uses ES modules. Webpack creates one compiler per page, writing HTML, entry bundles, lazy chunks, and emitted assets under `dist/<page>/`. Production entries use `index.[hash].js`; development entries use `index.js`. Bundle references are relative. Each compiler cleans its own directory; coordinated cleanup removes obsolete outputs. HTML-only pages receive no page bundle in disk builds. Shared external defaults are empty until explicitly configured. No CI or deployment workflow is included.
 
 ---
 
