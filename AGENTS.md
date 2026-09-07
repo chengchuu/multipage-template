@@ -14,6 +14,16 @@ GOAL.md
 
 Treat `GOAL.md` as the primary source of truth for project behavior and design decisions.
 
+## Implemented Commands and Files
+
+Use Node.js 22 or newer. Install and manage dependencies with pnpm; track `pnpm-lock.yaml` and keep `package-lock.json` untracked. Validate installation with `pnpm install --frozen-lockfile`.
+
+Run `npm run lint`, `npm run test`, `npm run build:dev`, and `npm run build` for build changes. `npm run lint:fix` writes files. `npm run dev` serves `/simple/` and `/example/` at `127.0.0.1:8080`. Restart the server after page/entry additions or removals and configuration edits.
+
+`scripts/discover-pages.js` discovers immediate page directories; `config/resolve-external-assets.js` validates and merges configuration; `config/ExternalAssetsPlugin.js` injects escaped asset tags through HtmlWebpackPlugin hooks. `webpack.config.js` composes these helpers. `test/build.test.js` builds isolated temporary fixtures using Node's test runner. See README.md for attribute support and script ordering.
+
+Build configuration and page configuration use CommonJS; browser code uses ES modules. Both build modes recreate `dist/`. Production bundles are content-hashed and referenced relatively. HTML-only pages receive no page bundle. Shared external defaults are empty until explicitly configured. No CI or deployment workflow is included.
+
 ---
 
 ## Core Architecture
@@ -387,21 +397,18 @@ Potential locations include:
 ```text
 config/
 scripts/
-webpack/
 ```
 
 Examples:
 
 ```text
 config/
-└── external-assets.config.js
+├── external-assets.config.js
+├── resolve-external-assets.js
+└── ExternalAssetsPlugin.js
 
 scripts/
 └── discover-pages.js
-
-webpack/
-├── create-page-plugins.js
-└── ExternalAssetsPlugin.js
 ```
 
 These names are architectural directions, not mandatory files.

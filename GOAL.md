@@ -492,7 +492,6 @@ ESLint should cover relevant JavaScript source and build-system files, including
 src/**/*.js
 config/**/*.js
 scripts/**/*.js
-webpack/**/*.js
 webpack.config.js
 ```
 
@@ -760,16 +759,7 @@ local development
 GitHub Actions
 ```
 
-Because `pages` is a greenfield project, the tracked lockfile policy should be selected explicitly.
-
-Until that decision is made:
-
-- Do not assume which lockfile should be committed.
-- Do not generate a lockfile solely to establish package-manager ownership.
-- Do not remove one lockfile solely because another package manager is used in a different context.
-- Do not rewrite lockfiles as incidental cleanup.
-
-Once a lockfile policy is selected, preserve it unless an explicit project decision changes it.
+The selected policy is to track `pnpm-lock.yaml` and keep `package-lock.json` untracked. Preserve this policy unless an explicit project decision changes it. Do not rewrite lockfiles as incidental cleanup.
 
 ### Workflow Boundary
 
@@ -807,21 +797,18 @@ A possible structure is:
 ```text
 config/
 scripts/
-webpack/
 ```
 
 For example:
 
 ```text
 config/
-└── external-assets.config.js
+├── external-assets.config.js
+├── resolve-external-assets.js
+└── ExternalAssetsPlugin.js
 
 scripts/
 └── discover-pages.js
-
-webpack/
-├── create-page-plugins.js
-└── ExternalAssetsPlugin.js
 ```
 
 The exact organization may evolve as implementation requirements become clearer.
@@ -924,14 +911,12 @@ pages/
 │           └── index.html
 │
 ├── config/
-│   └── external-assets.config.js
+│   ├── external-assets.config.js
+│   ├── resolve-external-assets.js
+│   └── ExternalAssetsPlugin.js
 │
 ├── scripts/
 │   └── discover-pages.js
-│
-├── webpack/
-│   ├── create-page-plugins.js
-│   └── ExternalAssetsPlugin.js
 │
 ├── dist/
 ├── eslint.config.js
@@ -941,7 +926,7 @@ pages/
 └── README.md
 ```
 
-A lockfile is intentionally omitted from this initial structure until the project explicitly selects its lockfile policy.
+The repository also tracks `pnpm-lock.yaml` under the selected lockfile policy.
 
 This structure is an initial direction rather than a permanent requirement.
 
@@ -1019,7 +1004,7 @@ It should not use `npm ci` or npm dependency caching.
 
 The project should not add Corepack setup, a repository-owned package-manager installer, or a `packageManager` field merely to enforce the workflow.
 
-The project's lockfile policy should be explicitly selected rather than inferred from package-manager usage.
+Track `pnpm-lock.yaml` and keep `package-lock.json` untracked, as explicitly selected for this project.
 
 A production build should generate the complete deployable result under:
 
