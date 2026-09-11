@@ -1,79 +1,94 @@
-English | [简体中文](./README_CN.md)
+# Pages
 
-# multipage-template
+Independent HTML pages built with Webpack 5. Pages are discovered from immediate directories under `src/pages/`; only `index.html` is required.
 
-Webpack multi-page and GitLab incremental build deployment template.
+Live Demo deployment target: <https://chengchuu.github.io/pages/>.
 
-## Entry
+## Install and run
 
-Each new standalone page only needs to create a folder under `pages`, but must have two entry files: `index.html` and `index.js`.
+Use Node.js 22 or newer and independently installed pnpm.
 
-```text
-├── package.json
-└── src
-    ├── index.js // pages - You can put common things on the outside.
-    └── pages
-        ├── page1
-        │   ├── index.js
-        │   └── index.html
-        └── page2
-            ├── style.css
-            ├── index.js
-            └── index.html
+```bash
+pnpm install
+npm run dev
 ```
 
-## Output
+Open <http://127.0.0.1:8080/simple/> for the HTML-only example or <http://127.0.0.1:8080/example/> for the counter example. There is no root landing page or SPA fallback.
 
-Each packaged page is independent.
+| Command                  | Purpose                                           |
+| :----------------------- | :------------------------------------------------ |
+| `npm run dev`            | Start the development server                      |
+| `npm run build:dev`      | Write a development build to `dist/`              |
+| `npm run build`          | Write a production build to `dist/`               |
+| `npm run build:pages`    | Build demos and generate the Pages directory      |
+| `npm run validate:pages` | Check the existing Pages artifact                 |
+| `npm run lint`           | Check JavaScript source, configuration, and tests |
+| `npm run lint:fix`       | Apply ESLint fixes                                |
+| `npm run test`           | Run Node tests with temporary build fixtures      |
 
-```text
-├── package.json
-└── dist
-    ├── page1
-    │   ├── index.html
-    │   └── 20210526.194300
-    │       ├── 7ffaa4103cae71b1629a.css
-    │       └── 7ffaa4103cae71b1629a.js
-    └── page2
-        ├── index.html
-        └── 20210526.194300
-            ├── 88870cd4b2e554c2a754.css
-            └── 88870cd4b2e554c2a754.js
+Use pnpm for dependency installation, additions, updates, and removals. Track `pnpm-lock.yaml`; keep `package-lock.json` untracked. Use `pnpm install --frozen-lockfile` to verify the recorded resolution. Use npm for project scripts and `npm pack` for package inspection. GitHub Actions uses `npm install` and npm scripts without npm dependency caching or `npm ci`; npm does not consume the pnpm lockfile.
+
+## GitHub Pages
+
+`npm run build:pages` runs the production build, then generates `dist/index.html` from discovered demos. It links to each independent page with relative URLs. The landing page has a static light theme, inline semantic colors, and no JavaScript. Its template belongs to `scripts/generate-pages-index.js`; CSS and the supplied palette pairs belong to `config/pages-index.css` and `config/pages-palette.js`. Only light palette values are emitted.
+
+Ordinary builds can remove this root document. Use `build:pages` to recreate the complete deployment artifact; the development server still has no root directory page.
+
+`npm run validate:pages` checks the existing artifact under the `/pages/` mount path without rebuilding. It checks discovered directory links, anchor destinations, script sources, stylesheet links, and image sources. Local destinations must exist within the artifact; external and non-file URLs are not fetched. Base elements are unsupported. The bounded HTML inspection handles quoted/unquoted attributes, common or numeric reference entities, and skips comments and raw-text contents. It is not a general HTML conformance checker and does not inspect CSS URLs, `srcset`, or runtime-created URLs.
+
+The workflow builds and validates on pushes to `main` and manual dispatch, then deploys `dist/` through the `github-pages` environment. Before enabling delivery, verify that the remote is `chengchuu/pages`, Pages uses GitHub Actions as its source, and environment rules allow the intended branch. Manual dispatch must also comply with those rules. No npm publication is included.
+
+Before deployment, serve the artifact under `/pages/` and check the root directory, both demos, counter behavior, navigation, runtime assets, and browser errors. Local checks do not prove GitHub configuration or live deployment. After an authorized deployment, verify all three public routes. Recover a regression through an authorized revert and rebuild; CI dependency resolution can differ from the local lockfile.
+
+## Add a page
+
+Create `src/pages/<name>/index.html` containing a normal HTML document. The next build generates `dist/<name>/index.html`. An optional `index.js` enables a page bundle. Browser scripts use ES modules and can import reusable code from `src/shared/`.
+
+HTML-only pages receive no page bundle. Each page is compiled independently into `dist/<name>/`: production entries use `index.[hash].js`, and development entries use `index.js`. Lazy-loaded chunks and emitted asset modules stay under that page's `chunks/` and `assets/` directories. Shared source dependencies are bundled independently for each page. HTML uses relative bundle URLs, so a page directory can be served on its own. Configured external resources remain external, and source-authored links to sibling pages still require those pages.
+
+Each compiler cleans only its own page directory; coordinated cleanup removes output belonging to deleted pages and the former root asset directory. Never edit generated files.
+
+The development server reloads existing pages after HTML or JavaScript edits. Each page includes a local development-server reload client; neither disk build emits that client or a page bundle for HTML-only pages. Restart the server after adding or removing page directories, adding or removing optional entries, or editing build/page configuration. Page discovery and configuration loading occur when Webpack starts.
+
+## External assets
+
+Project defaults live in `config/external-assets.config.js`. Both environments initially have empty arrays. Optional page configuration uses CommonJS:
+
+```js
+module.exports = {
+  externalAssets: {
+    development: {
+      styles: [ { href: "http://localhost:9202/local/index.css" } ],
+      scripts: [ { src: "http://localhost:5513/local/index.js", defer: true } ],
+    },
+    production: {
+      styles: [ { href: "https://i.mazey.net/net/index.css" } ],
+      scripts: [ { src: "https://i.mazey.net/net/index.js", defer: true } ],
+    },
+  },
+};
 ```
 
-## Deploy
+These URLs illustrate configuration only; supply resources you actually serve. External resources are linked, not downloaded or bundled. Missing optional configuration, environments, and arrays are treated as empty. Explicitly malformed values fail the build with the configuration path and field.
 
-### Aliyun OSS
+Webpack mode selects `development` or `production`, defaulting to production when omitted. Page arrays append to shared arrays without replacement or deduplication. Styles require a nonempty `href` and accept `media`, `integrity`, `crossorigin`, and `referrerpolicy`. Scripts require a nonempty `src` and accept boolean `defer`/`async` plus string `type`, `integrity`, `crossorigin`, and `referrerpolicy`. Unknown fields and incorrect value types are rejected. Optional attributes are emitted only when configured; false boolean attributes are omitted. Stylesheets always receive `rel="stylesheet"`.
 
-Use GitLab variable to run out of modified `pages` folder, and use Aliyun OSS CLI [aliyunoss-cli](https://github.com/chengchuu/aliyunoss-cli) to upload packaged files automatically.
+Configured tags are injected into the head using HtmlWebpackPlugin hooks: shared styles, page styles, shared scripts, page scripts, then the deferred page bundle. Source-authored tags retain their original positions. Classic blocking scripts execute as parsed; deferred classic scripts execute in document order. Async and module scripts follow browser scheduling, so tag order does not guarantee execution order across those categories. Use classic deferred dependencies when page JavaScript requires ordered external initialization.
 
-```text
-search_dir=src/pages
-for path in "$search_dir"/*; do
-echo "$(git diff HEAD~ --name-only | grep "$path")"
-    if [ "$(git diff HEAD~ --name-only | grep "$path/")" ]; then
-        page_name=$(basename $path)
-        echo "[CI] Page \"$page_name\" has been modified"
-        echo "[CI] Start building"
-        npx cross-env NODE_ENV=production PAGE=$page_name node build/build.js
-    fi
-done
+## Maintenance
+
+The root `webpack.config.js` composes supporting configuration and helpers in `config/`; page discovery lives in `scripts/`. The flat ESLint configuration separates browser modules from CommonJS configuration and Node tests. The nine formatting rules in `eslint.config.js` use warning severity; recommended static-analysis rules report errors. ESLint owns formatting; no separate formatter is installed. ESLint's core formatting rules are deprecated and retained here to match the requested baseline.
+
+```bash
+pnpm install --frozen-lockfile
+npm run lint
+npm run test
+npm run build:dev
+npm run build
+npm run build:pages
+npm run validate:pages
+git diff --check
+git status --short
 ```
 
-### Docker
-
-The page can be visited on `http://localhost:7415` by running the command: `bash DockerBuild.sh`.
-
-## Notification
-
-### WeixinWork
-
-The notification will be opened after filling the file: `build\shell\notification.sh`.
-
-## Reference
-
-[Use GitLab CI/CD and Aliyun CLI to deploy front-end projects](http://blog.mazey.net/1695.html)
-
-## Appendix
-
-Address of this project: <https://github.com/chengchuu/multipage-template>
+Tests build temporary projects in both modes and cover discovery, HTML-only output, page isolation, external assets, invalid configuration, and stale-output removal. Review generated output and exercise both example routes before changing build behavior.
