@@ -6,13 +6,7 @@ This repository is `pages`, a Webpack 5 multi-page frontend project.
 
 The project builds a collection of independent web pages through one shared build system.
 
-For complete product goals and architectural intent, read:
-
-```text
-GOAL.md
-```
-
-Treat `GOAL.md` as the primary source of truth for project behavior and design decisions.
+See `README.md` for implemented behavior, usage, and deployment guidance. Follow this guide for repository architecture and operating constraints.
 
 ## Implemented Commands and Files
 
@@ -484,7 +478,7 @@ Avoid:
 - Clever behavior that is difficult to trace.
 - Unnecessary dependencies.
 
-When multiple implementations are possible, prefer the simplest one that satisfies `GOAL.md`.
+When multiple implementations are possible, prefer the simplest one that satisfies the requested behavior and this guide's architecture constraints.
 
 ---
 
@@ -650,12 +644,6 @@ Do not commit, push, create tags, publish packages, or deploy unless explicitly 
 Keep these responsibilities distinct:
 
 ```text
-GOAL.md
-```
-
-Defines what the project is intended to achieve.
-
-```text
 AGENTS.md
 ```
 
@@ -665,11 +653,11 @@ Defines how coding agents should work within the repository.
 README.md
 ```
 
-Should eventually explain installation, usage, development commands, and project-facing documentation.
+Explains installation, usage, development commands, and deployment.
 
 When implementation decisions materially change architecture or behavior, update the appropriate documentation.
 
-Do not duplicate large sections of `GOAL.md` into unrelated files.
+Link to maintained documentation rather than duplicating large sections into unrelated files.
 
 ---
 

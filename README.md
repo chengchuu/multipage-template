@@ -77,7 +77,7 @@ Configured tags are injected into the head using HtmlWebpackPlugin hooks: shared
 
 ## Maintenance
 
-The root `webpack.config.js` composes supporting configuration and helpers in `config/`; page discovery lives in `scripts/`. The flat ESLint configuration separates browser modules from CommonJS configuration and Node tests. The nine formatting rules in GOAL.md use warning severity; recommended static-analysis rules report errors. ESLint owns formatting; no separate formatter is installed. ESLint's core formatting rules are deprecated and retained here to match the requested baseline.
+The root `webpack.config.js` composes supporting configuration and helpers in `config/`; page discovery lives in `scripts/`. The flat ESLint configuration separates browser modules from CommonJS configuration and Node tests. The nine formatting rules in `eslint.config.js` use warning severity; recommended static-analysis rules report errors. ESLint owns formatting; no separate formatter is installed. ESLint's core formatting rules are deprecated and retained here to match the requested baseline.
 
 ```bash
 pnpm install --frozen-lockfile

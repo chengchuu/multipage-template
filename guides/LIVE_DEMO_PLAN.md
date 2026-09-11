@@ -142,9 +142,8 @@ No `NPM_TOKEN` or npm publication workflow is needed for this goal.
 
 After implementation approval, update:
 
-- `GOAL.md`: record the Live Demo URL, generated directory, and deployment artifact contract.
 - `AGENTS.md`: replace the no-deployment statement and document Pages build and validation responsibilities.
-- `README.md`: add the Live Demo link, new commands, deployment prerequisites, and the distinction between local development and the Pages landing page.
+- `README.md`: record the Live Demo URL, generated directory, deployment artifact contract, new commands, deployment prerequisites, and the distinction between local development and the Pages landing page.
 
 Keep source ownership and package-manager policy consistent across these documents.
 
