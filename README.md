@@ -2,6 +2,8 @@
 
 Independent HTML pages built with Webpack 5. Pages are discovered from immediate directories under `src/pages/`; only `index.html` is required.
 
+Live Demo deployment target: <https://chengchuu.github.io/pages/>.
+
 ## Install and run
 
 Use Node.js 22 or newer and independently installed pnpm.
@@ -13,16 +15,30 @@ npm run dev
 
 Open <http://127.0.0.1:8080/simple/> for the HTML-only example or <http://127.0.0.1:8080/example/> for the counter example. There is no root landing page or SPA fallback.
 
-| Command | Purpose |
-|:--------|:--------|
-| `npm run dev` | Start the development server |
-| `npm run build:dev` | Write a development build to `dist/` |
-| `npm run build` | Write a production build to `dist/` |
-| `npm run lint` | Check JavaScript source, configuration, and tests |
-| `npm run lint:fix` | Apply ESLint fixes |
-| `npm run test` | Run Node tests with temporary build fixtures |
+| Command                  | Purpose                                           |
+| :----------------------- | :------------------------------------------------ |
+| `npm run dev`            | Start the development server                      |
+| `npm run build:dev`      | Write a development build to `dist/`              |
+| `npm run build`          | Write a production build to `dist/`               |
+| `npm run build:pages`    | Build demos and generate the Pages directory      |
+| `npm run validate:pages` | Check the existing Pages artifact                 |
+| `npm run lint`           | Check JavaScript source, configuration, and tests |
+| `npm run lint:fix`       | Apply ESLint fixes                                |
+| `npm run test`           | Run Node tests with temporary build fixtures      |
 
-Use pnpm for dependency installation, additions, updates, and removals. Track `pnpm-lock.yaml`; keep `package-lock.json` untracked. Use `pnpm install --frozen-lockfile` to verify the recorded resolution. Use npm for project scripts and `npm pack` for package inspection. No deployment workflow is included. Future GitHub Actions should use `npm install` and npm scripts without npm dependency caching or `npm ci`; npm does not consume the pnpm lockfile.
+Use pnpm for dependency installation, additions, updates, and removals. Track `pnpm-lock.yaml`; keep `package-lock.json` untracked. Use `pnpm install --frozen-lockfile` to verify the recorded resolution. Use npm for project scripts and `npm pack` for package inspection. GitHub Actions uses `npm install` and npm scripts without npm dependency caching or `npm ci`; npm does not consume the pnpm lockfile.
+
+## GitHub Pages
+
+`npm run build:pages` runs the production build, then generates `dist/index.html` from discovered demos. It links to each independent page with relative URLs. The landing page has a static light theme, inline semantic colors, and no JavaScript. Its template belongs to `scripts/generate-pages-index.js`; CSS and the supplied palette pairs belong to `config/pages-index.css` and `config/pages-palette.js`. Only light palette values are emitted.
+
+Ordinary builds can remove this root document. Use `build:pages` to recreate the complete deployment artifact; the development server still has no root directory page.
+
+`npm run validate:pages` checks the existing artifact under the `/pages/` mount path without rebuilding. It checks discovered directory links, anchor destinations, script sources, stylesheet links, and image sources. Local destinations must exist within the artifact; external and non-file URLs are not fetched. Base elements are unsupported. The bounded HTML inspection handles quoted/unquoted attributes, common or numeric reference entities, and skips comments and raw-text contents. It is not a general HTML conformance checker and does not inspect CSS URLs, `srcset`, or runtime-created URLs.
+
+The workflow builds and validates on pushes to `main` and manual dispatch, then deploys `dist/` through the `github-pages` environment. Before enabling delivery, verify that the remote is `chengchuu/pages`, Pages uses GitHub Actions as its source, and environment rules allow the intended branch. Manual dispatch must also comply with those rules. No npm publication is included.
+
+Before deployment, serve the artifact under `/pages/` and check the root directory, both demos, counter behavior, navigation, runtime assets, and browser errors. Local checks do not prove GitHub configuration or live deployment. After an authorized deployment, verify all three public routes. Recover a regression through an authorized revert and rebuild; CI dependency resolution can differ from the local lockfile.
 
 ## Add a page
 
@@ -69,6 +85,8 @@ npm run lint
 npm run test
 npm run build:dev
 npm run build
+npm run build:pages
+npm run validate:pages
 git diff --check
 git status --short
 ```

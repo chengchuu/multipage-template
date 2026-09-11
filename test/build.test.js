@@ -8,6 +8,8 @@ const webpack = require("webpack");
 const { createConfig } = require("../webpack.config");
 const discover = require("../scripts/discover-pages");
 const resolveAssets = require("../config/resolve-external-assets");
+const generatePagesIndex = require("../scripts/generate-pages-index");
+const validatePages = require("../scripts/validate-pages");
 
 const document = "<!doctype html><html><head><title>Fixture</title></head><body><!-- keep --><h1>Fixture &amp; content</h1></body></html>";
 
@@ -127,9 +129,14 @@ for (const mode of [ "development", "production" ]) {
     const stats = await build(root, mode);
     assert.equal(stats.assets.filter((asset) => asset.name.endsWith(".js")).length, 0);
     assert.doesNotMatch(await fs.readFile(path.join(root, "dist/first/index.html"), "utf8"), /<script/);
+    await generatePagesIndex(root);
+    await validatePages(root);
     await fs.rm(path.join(root, "src/pages/second"), { recursive: true });
     await build(root, mode);
     await assert.rejects(fs.stat(path.join(root, "dist/second/index.html")), { code: "ENOENT" });
+    await assert.rejects(fs.stat(path.join(root, "dist/index.html")), { code: "ENOENT" });
+    await generatePagesIndex(root);
+    await validatePages(root);
   });
 }
 

@@ -6,6 +6,12 @@ This repository is `pages`, a Webpack 5 multi-page frontend project.
 
 The project is designed to build and maintain a collection of independent web pages through one shared build system.
 
+The Live Demo deployment target is <https://chengchuu.github.io/pages/>. `npm run build:pages` generates a static root directory of all discovered demos after production compilation, preserving independent page directories and relative asset URLs. `npm run validate:pages` checks the complete existing artifact under `/pages/` without rebuilding.
+
+The directory uses the supplied semantic palette in a static light theme without browser JavaScript. Ordinary builds and local development retain their existing behavior; an ordinary build may remove the root directory document.
+
+GitHub Actions validates and deploys `dist/` on pushes to `main` and manual dispatch. Remote configuration and public routes must be verified during separately authorized deployment; local validation alone does not establish deployment success.
+
 Each page can have its own HTML, JavaScript, configuration, and external assets while reusing shared frontend logic and project-level defaults.
 
 Production output is generated under:

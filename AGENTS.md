@@ -22,7 +22,13 @@ Run `npm run lint`, `npm run test`, `npm run build:dev`, and `npm run build` for
 
 `scripts/discover-pages.js` discovers immediate page directories; `config/resolve-external-assets.js` validates and merges configuration; `config/ExternalAssetsPlugin.js` injects escaped asset tags through HtmlWebpackPlugin hooks. `webpack.config.js` composes these helpers. `test/build.test.js` builds isolated temporary fixtures using Node's test runner. See README.md for attribute support and script ordering.
 
-Build configuration and page configuration use CommonJS; browser code uses ES modules. Webpack creates one compiler per page, writing HTML, entry bundles, lazy chunks, and emitted assets under `dist/<page>/`. Production entries use `index.[hash].js`; development entries use `index.js`. Bundle references are relative. Each compiler cleans its own directory; coordinated cleanup removes obsolete outputs. HTML-only pages receive no page bundle in disk builds. Shared external defaults are empty until explicitly configured. No CI or deployment workflow is included.
+Build configuration and page configuration use CommonJS; browser code uses ES modules. Webpack creates one compiler per page, writing HTML, entry bundles, lazy chunks, and emitted assets under `dist/<page>/`. Production entries use `index.[hash].js`; development entries use `index.js`. Bundle references are relative. Each compiler cleans its own directory; coordinated cleanup removes obsolete outputs. HTML-only pages receive no page bundle in disk builds. Shared external defaults are empty until explicitly configured.
+
+`npm run build:pages` runs production compilation followed by `scripts/generate-pages-index.js`, which creates the static light demo directory at `dist/index.html`. Its CSS and palette are maintained in `config/pages-index.css` and `config/pages-palette.js`. Ordinary builds can remove the root page; do not change cleanup or the development server to preserve it.
+
+Run `npm run validate:pages` after the Pages build. `scripts/validate-pages.js` checks directory membership and supported HTML references under `/pages/`; browser checks must cover runtime-loaded assets separately. Pages tests include generation, failures, presentation, and workflow contracts.
+
+`.github/workflows/pages.yml` builds and deploys on `main` pushes and manual dispatch using Node.js 22, `npm install`, and no dependency caching. The artifact is `dist/`; the target is <https://chengchuu.github.io/pages/>. Remote Pages settings, environment permissions, and live routes require separate verification and deployment authorization. See README.md for validation scope and prerequisites.
 
 ---
 
